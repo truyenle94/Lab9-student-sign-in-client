@@ -15,3 +15,5 @@ module.exports = (squelize, DataTypes) => {
 
     return Student
 }
+
+/*newcode*/
