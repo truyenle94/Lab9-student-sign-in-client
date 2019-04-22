@@ -2,23 +2,42 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var Sequelize = require('sequelize')
 var api_routes = require('./routes/api.js')
+var path = require('path')
+
+db_url = process.env.DATABASE_URL
+
+let sequelize
 
 //Database configuration
-sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './db.sqlite3'
-})
+if(db_url){
+    sequelize = new Sequelize(db_url, {
+        dialect: 'postgres',
+    })
 
-//Verify connection
-sequelize.authenticate()
-    .then(()=> console.log('connected to sqlite'))
-    .catch(err => console.log('error connecting', err))
+    sequelize.authenticate()
+        .then(() => console.log('connected to Postgres'))
+        .catch(err => console.log(err))
+}
+
+else {
+    sequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: './db.sqlite3'
+    })
+
+    sequelize.authenticate()
+        .then(() => console.log('connected to sqlite'))
+        .catch(err => console.log(err))
+}
+
 
 //Initialize Student model
 let student = require('./model/student.js')(sequelize, Sequelize)
 
 var app = express()
 app.use(bodyParser.json())
+
+app.use(express.static(path.join(__dirname, 'student-sign-in-client','dist')))
 
 app.use('/api', api_routes(student))
 
