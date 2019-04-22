@@ -5,7 +5,7 @@ module.exports = function(Student) {
     var router = express.Router()
 
     router.get('/students', function(req,res, next){
-        Student.findAll( {order: ['name']}).then( students => {
+        Student.findAll( {order: ['StarID']}).then( students => {
             return res.json(students)
         }).catch(err => next(err))
     })
